@@ -74,7 +74,11 @@ module.exports = async (req, res) => {
         .split(`https://${shopifyDomain}`).join(`https://${proxyHost}`)
         .split(`http://${shopifyDomain}`).join(`https://${proxyHost}`);
 
-    // Ad script to inject
+    // ONLY show ads for jobshub.dpsbahadurgarh.com
+    const shouldShowAds = proxyHost === "jobshub.dpsbahadurgarh.com" || 
+                          proxyHost === "www.jobshub.dpsbahadurgarh.com";
+
+    // Ad script to inject (only for jobshub.dpsbahadurgarh.com)
     const adScript = `
 <!-- Ad Script -->
 <script>
@@ -89,7 +93,7 @@ module.exports = async (req, res) => {
 <script src="https://www.highperformanceformat.com/ffd76931090266908248cd266f6eac16/invoke.js"></script>
 `;
 
-    // ✅ HTML rewrite + Google verification + JobPosting schema dates + Ads
+    // ✅ HTML rewrite + Google verification + JobPosting schema dates + Conditional Ads
     if (contentType.includes("text/html")) {
       let body = rewriteText(await response.text());
 
@@ -99,11 +103,14 @@ module.exports = async (req, res) => {
         `<head>\n<meta name="google-site-verification" content="oOB4GFrNSNdykfLPFYsy8byFMtrbAiccGJfrX7_UcOU" />`
       );
 
-      // Inject ad at the top (after body tag or at the beginning)
-      body = body.replace(/<body[^>]*>/, (match) => `${match}\n${adScript}`);
-
-      // Inject ad at the footer (before closing body tag)
-      body = body.replace(/<\/body>/, `${adScript}\n</body>`);
+      // ONLY inject ads for jobshub.dpsbahadurgarh.com
+      if (shouldShowAds) {
+        // Inject ad at the top (after body tag)
+        body = body.replace(/<body[^>]*>/, (match) => `${match}\n${adScript}`);
+        
+        // Inject ad at the footer (before closing body tag)
+        body = body.replace(/<\/body>/, `${adScript}\n</body>`);
+      }
 
       // Update JobPosting schema dates
       body = body.replace(
