@@ -74,7 +74,22 @@ module.exports = async (req, res) => {
         .split(`https://${shopifyDomain}`).join(`https://${proxyHost}`)
         .split(`http://${shopifyDomain}`).join(`https://${proxyHost}`);
 
-    // ✅ HTML rewrite + Google verification + JobPosting schema dates
+    // Ad script to inject
+    const adScript = `
+<!-- Ad Script -->
+<script>
+  atOptions = {
+    'key' : 'ffd76931090266908248cd266f6eac16',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/ffd76931090266908248cd266f6eac16/invoke.js"></script>
+`;
+
+    // ✅ HTML rewrite + Google verification + JobPosting schema dates + Ads
     if (contentType.includes("text/html")) {
       let body = rewriteText(await response.text());
 
@@ -83,6 +98,12 @@ module.exports = async (req, res) => {
         "<head>",
         `<head>\n<meta name="google-site-verification" content="oOB4GFrNSNdykfLPFYsy8byFMtrbAiccGJfrX7_UcOU" />`
       );
+
+      // Inject ad at the top (after body tag or at the beginning)
+      body = body.replace(/<body[^>]*>/, (match) => `${match}\n${adScript}`);
+
+      // Inject ad at the footer (before closing body tag)
+      body = body.replace(/<\/body>/, `${adScript}\n</body>`);
 
       // Update JobPosting schema dates
       body = body.replace(
